@@ -8,7 +8,7 @@ Solución de filtrado de contenido y seguridad a nivel de red desplegada mediant
 
 ---
 
-## 📐 Arquitectura del Sistema
+## Arquitectura del Sistema
 
 El flujo de procesamiento DNS dentro de la red contenerizada sigue una cadena estricta de aislamiento y cifrado:
 
@@ -39,7 +39,7 @@ El flujo de procesamiento DNS dentro de la red contenerizada sigue una cadena es
 
 ---
 
-## ✨ Características Principales
+## Características Principales
 
 * **Filtrado de Contenido y Telemetría:** Interceptación y bloqueo de dominios maliciosos (phishing, malware), publicidad invasiva y telemetría de dispositivos IoT a nivel de red.
 * **Cifrado DoH (DNS-over-HTTPS):** Implementación del protocolo DoH mediante `cloudflared`, evitando la inspección de tráfico por parte del proveedor de servicios de internet (ISP) o ataques *Man-in-the-Middle* (MitM).
@@ -50,7 +50,7 @@ El flujo de procesamiento DNS dentro de la red contenerizada sigue una cadena es
 
 ---
 
-## 🛠️ Requisitos del Sistema
+## Requisitos del Sistema
 
 * **Docker Engine** (v20.10+) o **Docker Desktop**
 * **Docker Compose** (v2.0+)
@@ -58,7 +58,7 @@ El flujo de procesamiento DNS dentro de la red contenerizada sigue una cadena es
 
 ---
 
-## 🚀 Instalación y Despliegue
+## Instalación y Despliegue
 
 1. **Clonar el repositorio:**
    ```bash
@@ -79,7 +79,7 @@ El flujo de procesamiento DNS dentro de la red contenerizada sigue una cadena es
 
 ---
 
-## 📄 Archivo de Configuración (`docker-compose.yml`)
+## Archivo de Configuración (`docker-compose.yml`)
 
 ```yaml
 services:
@@ -121,7 +121,7 @@ networks:
 
 ---
 
-## 🧪 Verificación y Pruebas de Funcionamiento
+## Verificación y Pruebas de Funcionamiento
 
 Para validar el correcto funcionamiento de toda la cadena de resolución y cifrado:
 
@@ -145,7 +145,7 @@ Para validar el correcto funcionamiento de toda la cadena de resolución y cifra
 
 ---
 
-## 🔄 Mantenimiento y Actualizaciones
+## Mantenimiento y Actualizaciones
 
 Para actualizar las imágenes de los contenedores a la última versión manteniendo todos los datos intactos:
 
@@ -159,9 +159,3 @@ docker compose up -d
 # 3. Eliminar imágenes antiguas huérfanas
 docker image prune -f
 ```
-
----
-
-## 📝 Licencia
-
-Este proyecto se distribuye bajo la licencia **MIT**. Consulta el archivo `LICENSE` para más información.
