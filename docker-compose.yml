@@ -1,0 +1,35 @@
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80/tcp"
+    environment:
+      TZ: 'Europe/Madrid'
+      FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD}
+      PIHOLE_DNS_: '172.20.0.100#5053' #Obliga al pihole a reenviar todas sus consultas al puerto del contenedor de cloudflared      
+    volumes:
+      - './pihole:/etc/pihole'
+      - './dnsmasq.d:/etc/dnsmasq.d'
+    networks:
+      pihole_network:
+        ipv4_address: 172.20.0.2
+    restart: unless-stopped
+
+  cloudflared:
+    container_name: cloudflared
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --address 0.0.0.0 --port 5053 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+    networks:
+      pihole_network:
+        ipv4_address: 172.20.0.100
+    restart: unless-stopped
+
+networks:
+  pihole_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
