@@ -1,0 +1,16 @@
+# Variables de entorno y contraseñas
+.env
+
+# Volúmenes de datos locales de Pi-hole (base de datos, logs y listas generadas)
+pihole/
+dnsmasq.d/
+
+# Archivos de sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Archivos temporales y logs
+*.log
