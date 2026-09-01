@@ -20,12 +20,12 @@ services:
 
   cloudflared:
     container_name: cloudflared
-    image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --address 0.0.0.0 --port 5053 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+    image: cloudflare/cloudflared:2025.10.0
+    command: proxy-dns --port 5053 --address 0.0.0.0 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+    restart: unless-stopped
     networks:
       pihole_network:
         ipv4_address: 172.20.0.100
-    restart: unless-stopped
 
 networks:
   pihole_network:

@@ -6,6 +6,15 @@
 
 Solución de filtrado de contenido y seguridad a nivel de red desplegada mediante **Docker Compose**. Integra **Pi-hole** para la mitigación de rastreadores, publicidad y telemetría no deseada, junto con **cloudflared** como proxy de cifrado **DoH (DNS-over-HTTPS)**. Esta arquitectura garantiza que las consultas DNS no solo se filtren localmente, sino que viajen completamente cifradas e inalterables hacia internet.
 
+## Estructura del Proyecto
+.
+├── docker-compose.yml       # Definición de servicios, red privada y volúmenes
+├── .env                     # Plantilla para variables de entorno (contraseñas)
+├── .gitignore               # Exclusión de datos sensibles y persistencia local
+├── README.md                # Documentación técnica del proyecto
+└── docs/
+    ├── wireshark-dns-plain.png      # Captura de tráfico DNS tradicional (Puerto 53)
+    └── wireshark-doh-encrypted.png  # Captura de tráfico DoH cifrado (Puerto 443 / TLS)
 ---
 
 ## Arquitectura del Sistema
@@ -55,6 +64,7 @@ El flujo de procesamiento DNS dentro de la red contenerizada sigue una cadena es
 * **Docker Engine** (v20.10+) o **Docker Desktop**
 * **Docker Compose** (v2.0+)
 * Acceso a terminal / PowerShell / Bash
+* Wireshark (opcional, para auditoría de tráfico)
 
 ---
 
@@ -93,7 +103,7 @@ services:
     environment:
       TZ: 'Europe/Madrid'
       FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD}
-      PIHOLE_DNS_: '172.20.0.100#5053'
+      PIHOLE_DNS_: '172.20.0.100#5053' #Obliga al pihole a reenviar todas sus consultas al puerto del contenedor de cloudflared      
     volumes:
       - './pihole:/etc/pihole'
       - './dnsmasq.d:/etc/dnsmasq.d'
@@ -104,12 +114,12 @@ services:
 
   cloudflared:
     container_name: cloudflared
-    image: cloudflare/cloudflared:latest
-    command: proxy-dns --address 0.0.0.0 --port 5053 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+    image: cloudflare/cloudflared:2025.10.0
+    command: proxy-dns --port 5053 --address 0.0.0.0 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+    restart: unless-stopped
     networks:
       pihole_network:
         ipv4_address: 172.20.0.100
-    restart: unless-stopped
 
 networks:
   pihole_network:
@@ -122,6 +132,8 @@ networks:
 ---
 
 ## Verificación y Pruebas de Funcionamiento
+
+### 1. Validación de Resolución por Terminal (CLI)
 
 Para validar el correcto funcionamiento de toda la cadena de resolución y cifrado:
 
@@ -142,6 +154,24 @@ Para validar el correcto funcionamiento de toda la cadena de resolución y cifra
    docker logs --tail 20 cloudflared
    ```
    *Debe mostrar la inicialización del proxy DNS escuchando en `0.0.0.0:5053` y estableciendo conexiones DoH.*
+
+### 2. Auditoría y Análisis de Tráfico de Red (Wireshark)
+
+Para auditar el nivel de privacidad conseguido, se analizaron los paquetes de red capturados en la interfaz del host antes y después de implementar el túnel DoH:
+
+#### A. Tráfico DNS Sin Cifrar (Tradicional - Puerto 53)
+
+En una consulta convencional, el nombre de dominio viaja en texto plano. Cualquier observador en la red (ISP, router, o atacante) puede leer el campo `Name:` de la consulta:
+
+![Captura DNS Sin Cifrar](docs/wireshark-dns-plain.png)  
+*Figura 1: Captura de tráfico DNS plano en el puerto 53 dejando al descubierto el dominio consultado.*
+
+#### B. Tráfico DNS-over-HTTPS Cifrado (DoH - Puerto 443)
+
+Tras habilitar `cloudflared`, las peticiones hacia el exterior viajan encapsuladas mediante TLS 1.2 / TLS 1.3 a través del puerto seguro 443:
+
+![Captura DoH Cifrado](docs/wireshark-doh-encrypted.png)  
+*Figura 2: Captura de Wireshark mostrando paquetes Application Data sobre TLS. La carga útil del paquete está totalmente cifrada, impidiendo la inspección del dominio consultado.*
 
 ---
 
