@@ -7,14 +7,18 @@
 Solución de filtrado de contenido y seguridad a nivel de red desplegada mediante **Docker Compose**. Integra **Pi-hole** para la mitigación de rastreadores, publicidad y telemetría no deseada, junto con **cloudflared** como proxy de cifrado **DoH (DNS-over-HTTPS)**. Esta arquitectura garantiza que las consultas DNS no solo se filtren localmente, sino que viajen completamente cifradas e inalterables hacia internet.
 
 ## Estructura del Proyecto
+
+```text
 .
-├── docker-compose.yml       # Definición de servicios, red privada y volúmenes
-├── .env                     # Plantilla para variables de entorno (contraseñas)
-├── .gitignore               # Exclusión de datos sensibles y persistencia local
-├── README.md                # Documentación técnica del proyecto
+├── docker-compose.yml          # Definición de servicios, red privada y volúmenes
+├── .env.example                # Plantilla para variables de entorno (sin secretos)
+├── .gitignore                  # Exclusión de datos sensibles y persistencia local
+├── README.md                   # Documentación técnica del proyecto
 └── docs/
-    ├── wireshark-dns-plain.png      # Captura de tráfico DNS tradicional (Puerto 53)
-    └── wireshark-doh-encrypted.png  # Captura de tráfico DoH cifrado (Puerto 443 / TLS)
+    ├── wireshark-dns-plain.png     # Captura de tráfico DNS tradicional (Puerto 53)
+    └── wireshark-doh-encrypted.png # Captura de tráfico DoH cifrado (Puerto 443 / TLS)
+```
+
 ---
 
 ## Arquitectura del Sistema
